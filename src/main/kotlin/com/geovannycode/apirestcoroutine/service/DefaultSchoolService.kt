@@ -8,30 +8,32 @@ import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
-class DefaultSchoolService(private val schoolRepository: SchoolRepository): SchoolService {
+class DefaultSchoolService(private val schoolRepository: SchoolRepository) : SchoolService {
     override suspend fun saveSchool(school: School): School? = schoolRepository.save(school)
 
-    override suspend fun findAllSchool(): Flow<School> = schoolRepository.findAll()
+    override suspend fun findAllSchools(): Flow<School> = schoolRepository.findAll()
 
     override suspend fun findSchoolById(id: Long): School? = schoolRepository.findById(id)
 
     override suspend fun deleteSchoolById(id: Long) {
         val foundSchool = schoolRepository.findById(id)
 
-        if (foundSchool == null)
+        if (foundSchool == null) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "School with id $id no found.")
-        else
+        } else {
             schoolRepository.deleteById(id)
+        }
     }
 
-    override suspend fun findAllSchoolByNameLike(name: String): Flow<School> = schoolRepository.findByNameContaining(name)
+    override suspend fun findAllSchoolsByNameLike(name: String): Flow<School> = schoolRepository.findByNameContaining(name)
 
     override suspend fun updateSchool(id: Long, requestedSchool: School): School {
         val foundSchool = schoolRepository.findById(id)
 
-        return if (foundSchool == null)
+        return if (foundSchool == null) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "School with id $id no found.")
-        else
-            schoolRepository.save(foundSchool.copy(id=foundSchool.id))
+        } else {
+            schoolRepository.save(foundSchool.copy(id = foundSchool.id))
+        }
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 class DefaultStudentService(private val studentRepository: StudentRepository) : StudentService {
     override suspend fun saveUser(student: Student): Student? =
-        studentRepository.randomNameFindByEmail(student.email)
+        studentRepository.randomLastNameFindByEmail(student.email)
             .firstOrNull()
             ?.let { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The specified email is already in student.") }
             ?: studentRepository.save(student)
@@ -34,7 +34,7 @@ class DefaultStudentService(private val studentRepository: StudentRepository) : 
         val foundStudent = studentRepository.findById(id)
 
         return if (foundStudent == null) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Stundet with id $id not found.")
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id $id not found.")
         } else {
             studentRepository.save(requestedStudent.copy(id = foundStudent.id))
         }

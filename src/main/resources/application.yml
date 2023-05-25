@@ -1,9 +1,6 @@
-server:
-  port: 8080
-
-# Oracle #
 spring:
   r2dbc:
-    url: r2dbc:postgresql://${DB_HOST:localhost}:5432/app
+    url: r2dbc:postgresql://${DB_HOST:localhost}:5432/
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:123}
+    name: ${DB_NAME:postgres}
