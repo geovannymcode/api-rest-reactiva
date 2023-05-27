@@ -33,7 +33,7 @@ class DefaultSchoolService(private val schoolRepository: SchoolRepository) : Sch
         return if (foundSchool == null) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "School with id $id no found.")
         } else {
-            schoolRepository.save(foundSchool.copy(id = foundSchool.id))
+            schoolRepository.save(requestedSchool.copy(id = foundSchool.id))
         }
     }
 }

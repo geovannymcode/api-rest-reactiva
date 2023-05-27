@@ -84,6 +84,7 @@ private fun School.toResponse(students: List<Student> = emptyList()): SchoolResp
         id = this.id!!,
         name = this.name,
         address = this.address,
+        email = this.email,
         students = students.map(Student::toResponse),
     )
 
