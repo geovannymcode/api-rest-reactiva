@@ -1,5 +1,6 @@
 package com.geovannycode.apirestcoroutine.controller
 
+import com.geovannycode.apirestcoroutine.dto.SchoolRequest
 import com.geovannycode.apirestcoroutine.dto.SchoolResponse
 import com.geovannycode.apirestcoroutine.model.School
 import com.geovannycode.apirestcoroutine.model.Student
@@ -33,6 +34,13 @@ class SchoolController(
             }
     }
 
+    @PostMapping
+    suspend fun createSchool(@RequestBody schoolRequest: SchoolRequest): SchoolResponse =
+        schoolService.saveSchool(
+            school = schoolRequest.toModel(),
+        )?.toResponse()
+            ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error during school creation.")
+
     @GetMapping("/{id}")
     suspend fun findSchoolById(
         @PathVariable id: Long,
@@ -45,6 +53,28 @@ class SchoolController(
             }
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "School with id $id not found.")
 
+    @PutMapping("/{id}")
+    suspend fun updateSchool(
+        @PathVariable id: Long,
+        @RequestBody schoolRequest: SchoolRequest
+    ): SchoolResponse =
+        schoolService.updateSchool(
+            id = id,
+            requestedSchool = schoolRequest.toModel()
+        )
+            .let { school ->
+                school.toResponse(
+                    students = findSchoolStudents(school)
+                )
+            }
+
+    @DeleteMapping("/{id}")
+    suspend fun deleteSchoolById(
+        @PathVariable id: Long
+    ) {
+        schoolService.deleteSchoolById(id)
+    }
+
     private suspend fun findSchoolStudents(school: School) =
         studentService.findStudentsBySchoolId(school.id!!)
             .toList()
@@ -55,4 +85,11 @@ private fun School.toResponse(students: List<Student> = emptyList()): SchoolResp
         name = this.name,
         address = this.address,
         students = students.map(Student::toResponse),
+    )
+
+private fun SchoolRequest.toModel(): School =
+    School(
+        name = this.name,
+        address = this.address,
+        email = this.email,
     )
