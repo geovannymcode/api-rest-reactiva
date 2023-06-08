@@ -13,8 +13,8 @@ class DefaultStudentService(private val studentRepository: StudentRepository) : 
     override suspend fun saveUser(student: Student): Student? =
         studentRepository.randomLastNameFindByEmail(student.email)
             .firstOrNull()
-            ?.let { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The specified email is already in student.") }
-            ?: studentRepository.save(student)
+            ?.let {studentRepository.save(student)}
+            ?:  throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The specified email is already in student.")
 
     override suspend fun findAllStudents(): Flow<Student> = studentRepository.findAll()
 
